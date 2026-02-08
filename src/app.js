@@ -32,10 +32,14 @@ app.get('/api/health', (req, res) => {
 import userRoutes from './routes/userRouter.js';
 import newsRoutes from './routes/newsRouter.js';
 import chatRoutes from './routes/chat.js';
+import likeRoutes from './routes/likeRouter.js';
+import commentRoutes from './routes/commentRouter.js';
 
 //routes declaration
 app.use('/api/users', userRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/likes', likeRoutes);
+app.use('/api/comments', commentRoutes);
 
 export default app;

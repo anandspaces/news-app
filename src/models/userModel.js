@@ -3,12 +3,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
   fullName: {
     type: String,
     required: true,
@@ -26,9 +20,29 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  preferences: [{
+  interests: [{
     type: String // e.g., 'Politics', 'Sports', 'Tech'
   }],
+  ageGroup: {
+    type: String, // e.g., '18-24', '25-34'
+    required: true
+  },
+  language: {
+    type: String,
+    default: 'en' 
+  },
+  city: {
+    type: String,
+    trim: true
+  },
+  pincode: {
+    type: String,
+    trim: true
+  },
+  state: {
+    type: String,
+    trim: true
+  },
   savedNews: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'News'
@@ -58,7 +72,6 @@ userSchema.methods = {
             {
                 _id: this._id,
                 email: this.email,
-                username: this.username,
                 fullName: this.fullName
             },
             process.env.ACCESS_TOKEN_SECRET,

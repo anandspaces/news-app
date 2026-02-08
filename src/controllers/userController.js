@@ -26,60 +26,43 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 
 const registerUser = asyncHandler(async (req, res) => {
-  
-  const { username, email, fullName, password , preferences} = req.body;
+  console.log("payload is here", req.body);
+  const {
+    email,
+    fullName,
+    password,
+    interests,
+    ageGroup,
+    language,
+    city,
+    pincode,
+    state
+  } = req.body;
 
   if (
-    [username, email, fullName, password].some((field) => field?.trim() === "")
+    [email, fullName, password, ageGroup, city, pincode, state].some((field) =>
+      typeof field !== 'string' || field.trim() === ""
+    )
   ) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, "All fields are required and must be strings");
   }
 
-  const userExists = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const userExists = await User.findOne({ email });
 
+  console.log("userExists", userExists);
   if (userExists)
-    throw new ApiError(409, "user with username or email already exists");
-
-  // console.log("req.files", req.files);
-
-  // const avatarLocalPath = req.files?.avatar[0]?.path;
-  // // console.log("avatarLocalPath", avatarLocalPath);
-
-  // let coverImageLocalPath;
-  // if (
-  //   req.files &&
-  //   Array.isArray(req.files.coverImage) &&
-  //   req.files.coverImage.length > 0
-  // ) {
-  //   coverImageLocalPath = req.files.coverImage[0].path;
-  // }
-
-  // if (!avatarLocalPath) throw new ApiError(400, "Avatar file is required");
-
-  // const avatar = await uploadOnCloudinary(avatarLocalPath).catch((error) =>
-  //   console.log(error)
-  // );
-  // const coverImage = await uploadOnCloudinary(coverImageLocalPath);
-
-  // // console.log(avatar);null
-  // if (!avatar) throw new ApiError(400, "Avatar file is required!!!.");
+    throw new ApiError(409, "user with email already exists");
 
   const user = await User.create({
     fullName,
-    // avatar: {
-    //   public_id: avatar.public_id,
-    //   url: avatar.secure_url,
-    // },
-    // coverImage: {
-    //   public_id: coverImage?.public_id || "",
-    //   url: coverImage?.secure_url || "",
-    // },
-    username: username.toLowerCase(),
     email,
     password,
-    preferences,
+    interests,
+    ageGroup,
+    language,
+    city,
+    pincode,
+    state
   });
 
   const createdUser = await User.findById(user._id).select(
@@ -96,16 +79,14 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 const loginUser = asyncHandler(async (req, res) => {
-  
-  const { email, username, password } = req.body;
 
-  if (!(username || email)) {
-    throw new ApiError(400, "username or email is required.");
+  const { email, password } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "email is required.");
   }
 
-  const user = await User.findOne({
-    $or: [{ email }, { username }],
-  });
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new ApiError(404, "User doesnot exist.");
@@ -116,7 +97,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isPasswordCorrect) {
     throw new ApiError(401, "Invalid user credentials.");
   }
-   console.log(user._id);
+  console.log(user._id);
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     user._id
   );
@@ -172,6 +153,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logout successfull !!!."));
 });
 
- 
+
 
 export { registerUser, loginUser, logoutUser };
