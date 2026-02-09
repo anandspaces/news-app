@@ -2,6 +2,7 @@ import User from '../models/userModel.js';
 import ApiError from '../utils/apiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiResponse from '../utils/apiResponse.js';
+import logger from '../utils/logger.js'; // Import logger
 
 // Generate JWT Token
 
@@ -16,7 +17,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    console.error("Token Generation Error:", error);
+    logger.error(`Token Generation Error: ${error}`);
     throw new ApiError(
       500,
       "Something went wrong while generating refresh and access token."
@@ -26,7 +27,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 
 const registerUser = asyncHandler(async (req, res) => {
-  console.log("payload is here", req.body);
+  logger.info(`payload is here: ${JSON.stringify(req.body)}`);
   const {
     email,
     fullName,
@@ -49,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const userExists = await User.findOne({ email });
 
-  console.log("userExists", userExists);
+  logger.info(`userExists: ${userExists}`);
   if (userExists)
     throw new ApiError(409, "user with email already exists");
 
@@ -97,7 +98,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isPasswordCorrect) {
     throw new ApiError(401, "Invalid user credentials.");
   }
-  console.log(user._id);
+  logger.info(`User ID: ${user._id}`);
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     user._id
   );
@@ -130,15 +131,17 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $unset: {
-        refreshToken: 1, // removes field from document
+  if (req.user?._id) {
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $unset: {
+          refreshToken: 1, // removes field from document
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
+  }
 
   const options = {
     httpOnly: true,

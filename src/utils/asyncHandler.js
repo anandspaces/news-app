@@ -1,9 +1,11 @@
+import logger from './logger.js'; // Import logger
+
 const asyncHandler = (requestHandler) => {
   return async (req, res, next) => {
     try {
       await Promise.resolve(requestHandler(req, res, next));
     } catch (error) {
-      console.error("AsyncHandler catch error:", error); // Log the full error for debugging
+      logger.error(`AsyncHandler catch error: ${error}`); // Log the full error for debugging
       const statusCode = error.statusCode || 500;
       const errorMessage = error.message || "Internal Server Error";
       res.status(statusCode).json({

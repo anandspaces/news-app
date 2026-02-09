@@ -4,13 +4,14 @@ dotenv.config();
 import app from './src/app.js';
 import connectDB from './src/config/db.js';
 import { initSocket } from './src/sockets/index.js';
+import logger from './src/utils/logger.js'; // Import logger
 
 connectDB()
   .then(() => {
     const server = app.listen(process.env.PORT || 8000, () => {
-      console.log(`Server is listening on: ${process.env.PORT}`);
+      logger.info(`Server is listening on: ${process.env.PORT}`); // Using logger.info
     });
-    
+
     initSocket(server);
   })
-  .catch((error) => console.log("MONGODB connection failed!!!: ", error));
+  .catch((error) => logger.error(`MONGODB connection failed!!!: ${error}`)); // Using logger.error
