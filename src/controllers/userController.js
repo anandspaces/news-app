@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';
 import Interest from '../models/interestModel.js';
+import Language from '../models/languageModel.js';
 import ApiError from '../utils/apiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiResponse from '../utils/apiResponse.js';
@@ -175,4 +176,20 @@ const getInterests = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, logoutUser, getInterests };
+const getLanguages = async (req, res) => {
+  try {
+    const languages = await Language.find().select('name _id').sort({ name: 1 });
+    res.status(200).json({
+      success: true,
+      data: languages
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message
+    });
+  }
+};
+
+export { registerUser, loginUser, logoutUser, getInterests, getLanguages };
