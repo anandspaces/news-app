@@ -4,7 +4,7 @@ import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-const toggleVideoLike = asyncHandler(async (req, res) => {
+/* const toggleVideoLike = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     // toggle like on video
     const alreadyLiked = await Like.findOne({
@@ -25,7 +25,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     })
 
     return res.status(200).json(new ApiResponse(200, {isLiked: true}, "Liked successfully"));
-})
+}) */
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
@@ -35,10 +35,10 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id
     })
 
-    if(alreadyLiked){
+    if (alreadyLiked) {
         await Like.findByIdAndDelete(alreadyLiked?._id);
 
-        return res.status(200).json(new ApiResponse(200, {isLiked: false}, "Unliked successfully"));
+        return res.status(200).json(new ApiResponse(200, { isLiked: false }, "Unliked successfully"));
 
     }
 
@@ -47,7 +47,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id
     })
 
-    return res.status(200).json(new ApiResponse(200, {isLiked: true}, "Liked successfully"));
+    return res.status(200).json(new ApiResponse(200, { isLiked: true }, "Liked successfully"));
 })
 
 const toggleNewsLike = asyncHandler(async (req, res) => {
@@ -58,10 +58,10 @@ const toggleNewsLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id
     })
 
-    if(alreadyLiked){
+    if (alreadyLiked) {
         await Like.findByIdAndDelete(alreadyLiked?._id);
 
-        return res.status(200).json(new ApiResponse(200, {isLiked: false}, "Unliked successfully"));
+        return res.status(200).json(new ApiResponse(200, { isLiked: false }, "Unliked successfully"));
 
     }
 
@@ -70,7 +70,7 @@ const toggleNewsLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id
     })
 
-    return res.status(200).json(new ApiResponse(200, {isLiked: true}, "Liked successfully"));
+    return res.status(200).json(new ApiResponse(200, { isLiked: true }, "Liked successfully"));
 
 }
 )
@@ -83,10 +83,10 @@ const togglePodcastLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id
     })
 
-    if(alreadyLiked){
+    if (alreadyLiked) {
         await Like.findByIdAndDelete(alreadyLiked?._id);
 
-        return res.status(200).json(new ApiResponse(200, {isLiked: false}, "Unliked successfully"));
+        return res.status(200).json(new ApiResponse(200, { isLiked: false }, "Unliked successfully"));
 
     }
 
@@ -95,12 +95,12 @@ const togglePodcastLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id
     })
 
-    return res.status(200).json(new ApiResponse(200, {isLiked: true}, "Liked successfully"));
+    return res.status(200).json(new ApiResponse(200, { isLiked: true }, "Liked successfully"));
 
 
 })
 
-const getLikedVideos = asyncHandler(async (req, res) => {
+/* const getLikedVideos = asyncHandler(async (req, res) => {
     // get all liked videos by user
     const likedVideos = await Like.aggregate([
         {
@@ -127,12 +127,12 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     ])
 
     return res.status(200).json(new ApiResponse(200, likedVideos, "Liked videos fetched successfully"));
-})
+}) */
 
 export {
     toggleCommentLike,
     toggleNewsLike,
-    toggleVideoLike,
+    // toggleVideoLike,
     togglePodcastLike,
-    getLikedVideos
+    // getLikedVideos
 }

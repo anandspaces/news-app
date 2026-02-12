@@ -4,7 +4,7 @@ import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-const getVideoComments = asyncHandler(async (req, res) => {
+/* const getVideoComments = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
@@ -70,7 +70,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     const comments = await Comment.aggregatePaginate(aggregateQuery, options);
 
     return res.status(200).json(new ApiResponse(200, comments, "Comments fetched successfully"));
-});
+}); */
 
 const getNewsComments = asyncHandler(async (req, res) => {
     const { newsId } = req.params;
@@ -222,7 +222,7 @@ const addComment = asyncHandler(async (req, res) => {
         owner: req.user?._id
     };
 
-    if (videoId) commentData.video = videoId;
+    // if (videoId) commentData.video = videoId;
     if (newsId) commentData.news = newsId;
     if (podcastId) commentData.podcast = podcastId;
 
@@ -274,7 +274,7 @@ const deleteComment = asyncHandler(async (req, res) => {
 });
 
 export {
-    getVideoComments,
+    // getVideoComments,
     getNewsComments,
     getPodcastComments,
     addComment,

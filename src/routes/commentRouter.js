@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
     addComment,
     deleteComment,
-    getVideoComments,
+    // getVideoComments,
     getNewsComments,
     getPodcastComments,
     updateComment
@@ -12,7 +12,7 @@ import { verifyJWT } from "../middlewares/authMiddleware.js"
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.route("/video/:videoId").get(getVideoComments).post(addComment);
+// router.route("/video/:videoId").get(getVideoComments).post(addComment);
 router.route("/news/:newsId").get(getNewsComments).post(addComment);
 router.route("/podcast/:podcastId").get(getPodcastComments).post(addComment);
 
