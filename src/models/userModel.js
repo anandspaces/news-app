@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 const userSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: true,
     trim: true,
     index: true
   },
@@ -20,16 +19,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  otp: {
+    type: String,
+  },
+  otpExpiry: {
+    type: Date,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
   interests: [{
     type: String // e.g., 'Politics', 'Sports', 'Tech'
   }],
   ageGroup: {
-    type: String, // e.g., '18-24', '25-34'
-    required: true
+    type: String,// e.g., '18-24', '25-34'
+    default: '18-24'
   },
   language: {
     type: String,
-    default: 'en' 
+    default: 'en'
   },
   city: {
     type: String,
@@ -54,7 +63,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
     return;
   }
@@ -64,32 +73,32 @@ userSchema.pre('save', async function() {
 
 // Method to match password
 userSchema.methods = {
-    comparePassword: async function(plainTextPassword) {
-        return await bcrypt.compare(plainTextPassword, this.password)
-    },
-    generateAccessToken: function(){
-        return jwt.sign(
-            {
-                _id: this._id,
-                email: this.email,
-                fullName: this.fullName
-            },
-            process.env.ACCESS_TOKEN_SECRET,
-            {
-                expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-            }
-        )
-    },
-    generateRefreshToken: function(){
-        return jwt.sign(
-            {
-                _id: this._id,
-            },
-            process.env.REFRESH_TOKEN_SECRET,
-            {
-                expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-            }
-        )
-    },
+  comparePassword: async function (plainTextPassword) {
+    return await bcrypt.compare(plainTextPassword, this.password)
+  },
+  generateAccessToken: function () {
+    return jwt.sign(
+      {
+        _id: this._id,
+        email: this.email,
+        fullName: this.fullName
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+      }
+    )
+  },
+  generateRefreshToken: function () {
+    return jwt.sign(
+      {
+        _id: this._id,
+      },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+      }
+    )
+  },
 }
 export default mongoose.model('User', userSchema);

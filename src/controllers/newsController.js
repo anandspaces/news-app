@@ -1,12 +1,12 @@
 import News from "../models/newsModel.js";
-import  asyncHandler  from '../utils/asyncHandler.js';
-import  ApiResponse  from '../utils/apiResponse.js';
-import  ApiError  from '../utils/apiError.js';  
+import asyncHandler from '../utils/asyncHandler.js';
+import ApiResponse from '../utils/apiResponse.js';
+import ApiError from '../utils/apiError.js';
+import logger from "../utils/logger.js";
 
 
 const getAllNews = asyncHandler(async (req, res) => {
     const news = await News.find();
-    
     if (!news) {
         throw new ApiError(404, "No news found");
     }
@@ -16,10 +16,15 @@ const getAllNews = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, news, "News fetched successfully"));
 });
 
-// @desc    Create a news item
-// @route   POST /api/news
-// @access  Private (Admin)
 const createNews = asyncHandler(async (req, res) => {
+    // Handle image uploads
+    if (req.files && req.files.length > 0) {
+        const imagePaths = req.files.map(file => {
+            return `${req.protocol}://${req.get('host')}/images/${file.filename}`;
+        });
+        req.body.images = imagePaths;
+    }
+
     const news = await News.create(req.body);
 
     if (!news) {
@@ -36,7 +41,7 @@ const createNews = asyncHandler(async (req, res) => {
 // @access  Private
 const analyzeNews = asyncHandler(async (req, res) => {
     const news = await News.findById(req.params.id);
-    
+
     if (!news) {
         throw new ApiError(404, "News not found");
     }

@@ -2,6 +2,7 @@ import JWT from "jsonwebtoken";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import User from "../models/userModel.js";
+import logger from "../utils/logger.js";
 
 const verifyAuthentication = async (req, isOptional = false) => {
   try {
@@ -37,11 +38,13 @@ const verifyAuthentication = async (req, isOptional = false) => {
 };
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
+  logger.info("verifyJWT called");
   await verifyAuthentication(req, false);
   next();
 });
 
 export const verifyJWTForLogout = asyncHandler(async (req, _, next) => {
+  logger.info("verifyJWTForLogout called");
   await verifyAuthentication(req, true);
   next();
 });
