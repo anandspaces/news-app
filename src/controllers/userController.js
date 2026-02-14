@@ -34,7 +34,10 @@ const registerUser = asyncHandler(async (req, res) => {
   const {
     email,
     password,
-    fullName,
+    firstName,
+    lastName,
+    mobileNumber,
+    countryCode,
     interests,
     ageGroup,
     language,
@@ -44,11 +47,11 @@ const registerUser = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [email, password].some((field) =>
+    [email, password, firstName].some((field) =>
       typeof field !== 'string' || field.trim() === ""
     )
   ) {
-    throw new ApiError(400, "Email and Password are required");
+    throw new ApiError(400, "All fields are required");
   }
 
   const userExists = await User.findOne({ email });
@@ -57,29 +60,48 @@ const registerUser = asyncHandler(async (req, res) => {
   if (userExists)
     throw new ApiError(409, "User with email already exists");
 
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
   const user = await User.create({
     email,
     password,
-    fullName,
+    firstName,
+    lastName,
+    mobileNumber,
+    countryCode,
     interests,
     ageGroup,
     language,
     city,
     pincode,
     state,
-    isVerified: false // Explicitly set to false, though default handles it
+    isVerified: false, // Explicitly set to false, though default handles it
+    otp,
+    otpExpiry
   });
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken -otp -otpExpiry"
   );
 
   if (!createdUser)
     throw new ApiError(500, "User registration failed, please try again");
 
+  // Send OTP email asynchronously (do not await)
+  const message = `Your OTP for verification is: ${otp}. It is valid for 10 minutes.`;
+
+  sendEmail({
+    email: user.email,
+    subject: 'News App - Verification OTP',
+    message,
+  }).catch((error) => {
+    logger.error(`Error sending registration OTP email: ${error.message}`);
+  });
+
   return res
     .status(201)
-    .json(new ApiResponse(201, createdUser, "User registered successfully. Please verify your email."));
+    .json(new ApiResponse(201, createdUser, "User registered successfully. OTP will be sent to your email shortly."));
 });
 
 
@@ -190,7 +212,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-  const { fullName, email, interests, ageGroup, language, city, pincode, state } = req.body;
+  const { firstName, lastName, mobileNumber, countryCode, email, interests, ageGroup, language, city, pincode, state } = req.body;
 
   // Prevent email update for now (or handle it with verification logic if needed)
   if (email && email !== req.user.email) {
@@ -201,7 +223,10 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     req.user?._id,
     {
       $set: {
-        fullName,
+        firstName,
+        lastName,
+        mobileNumber,
+        countryCode,
         interests, // Assuming interests is an array of strings/Ids
         ageGroup,
         language,

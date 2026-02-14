@@ -3,10 +3,23 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const userSchema = new mongoose.Schema({
-  fullName: {
+  firstName: {
     type: String,
     trim: true,
     index: true
+  },
+  lastName: {
+    type: String,
+    trim: true,
+    index: true
+  },
+  mobileNumber: {
+    type: String,
+    trim: true
+  },
+  countryCode: {
+    type: String,
+    default: '+91'
   },
   email: {
     type: String,
@@ -28,6 +41,13 @@ const userSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false
+  },
+  youtubeTokens: {
+    type: Object, // Stores access_token, refresh_token, scope, token_type, expiry_date
+    default: {}
+  },
+  refreshToken: {
+    type: String
   },
   interests: [{
     type: String // e.g., 'Politics', 'Sports', 'Tech'
@@ -81,7 +101,8 @@ userSchema.methods = {
       {
         _id: this._id,
         email: this.email,
-        fullName: this.fullName
+        firstName: this.firstName,
+        lastName: this.lastName
       },
       process.env.ACCESS_TOKEN_SECRET,
       {

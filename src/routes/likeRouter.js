@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-    getLikedVideos,
+    // getLikedVideos,
     toggleCommentLike,
     // toggleVideoLike,
     toggleNewsLike,

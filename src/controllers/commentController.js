@@ -122,7 +122,8 @@ const getNewsComments = asyncHandler(async (req, res) => {
                 likesCount: 1,
                 owner: {
                     username: 1,
-                    fullName: 1,
+                    firstName: 1,
+                    lastName: 1,
                     avatar: 1
                 },
                 isLiked: 1
@@ -190,7 +191,8 @@ const getPodcastComments = asyncHandler(async (req, res) => {
                 likesCount: 1,
                 owner: {
                     username: 1,
-                    fullName: 1,
+                    firstName: 1,
+                    lastName: 1,
                     avatar: 1
                 },
                 isLiked: 1
