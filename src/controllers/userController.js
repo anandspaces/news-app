@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [email, password, firstName].some((field) =>
+    [email, password].some((field) =>
       typeof field !== 'string' || field.trim() === ""
     )
   ) {
